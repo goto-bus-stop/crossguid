@@ -20,7 +20,7 @@ plain C function you don't even need to compile as Objective-C++.
 
 ## Windows
 
-On Windows we just use the the built-in function `CoCreateGuid`. CMake can
+On Windows we use the built-in function `CoCreateGuid`. CMake can
 generate a Visual Studio project if that's your thing.
 
 ## Android
@@ -38,7 +38,7 @@ following requirements:
 
 ## Compiling
 
-Just do the normal cmake thing:
+Do the normal cmake thing:
 
 ```
 mkdir build
@@ -50,7 +50,7 @@ make install
 ## Running tests
 
 After compiling as described above you should get two files: `libcrossguid.a` (the
-static library) and `crossguid-test` (the test runner). So to run the tests just do:
+static library) and `crossguid-test` (the test runner). So to run the tests do:
 
 ```
 ./crossguid-test

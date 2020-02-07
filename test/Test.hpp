@@ -1,7 +1,6 @@
 #pragma once
 
 #include <crossguid/guid.hpp>
-#include <iostream>
-#include <unordered_map>
+#include <ostream>
 
 int test(std::ostream& outStream);

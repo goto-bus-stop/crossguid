@@ -1,4 +1,9 @@
 #include "Test.hpp"
+#include <algorithm>
+#include <array>
+#include <ostream>
+#include <sstream>
+#include <unordered_map>
 
 int test(std::ostream& outStream) {
   int failed = 0;

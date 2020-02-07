@@ -119,9 +119,15 @@ int test(std::ostream &outStream)
 	}};
 	xg::Guid guidFromBytes(bytes);
 	xg::Guid guidFromString("0102030405060708090a0b0c0d0e0fdd");
+	constexpr xg::Guid guidFromStringConstexpr("0102030405060708090a0b0c0d0e0fdd");
 	if (guidFromBytes != guidFromString)
 	{
 		outStream << "FAIL - String/bytes make different guids" << std::endl;
+		failed++;
+	}
+	if (guidFromBytes != guidFromStringConstexpr)
+	{
+		outStream << "FAIL - constexpr/bytes make different guids" << std::endl;
 		failed++;
 	}
 

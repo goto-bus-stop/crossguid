@@ -36,33 +36,6 @@ following requirements:
 - adb is in your path.
 - You have an Android sdk setup including `ANDROID_HOME` environment variable.
 
-## Versions
-
-This is version 0.2 of CrossGuid. If you all already using CrossGuid and your code
-uses `GuidGenerator` then you are using version 0.1. Differences in version 0.2:
-
-- Put everything inside the namespace `xg` instead of using the global
-  namespace.
-- Removed `GuidGenerator` class and replaced with the free function
-  `xg::newGuid`. This is the way I originally wanted it to work but since Android
-  is a special snowflake requiring state (`JNIEnv *`) I introduced the
-  `GuidGenerator` class specifically so that there would be somewhere to store
-  the `JNIEnv *` when running on Android. However, this basically meant
-  complicating the library for the sake of one platform. In version 0.2 the goal is
-  to design for the normal platforms and let Android be weird. In Android you just
-  need to run `xg::initJni(JNIEnv *)` before you create any guids. The `JNIEnv *`
-  is just stored as a global variable.
-- Added CMake build system. Instead of different scripts for each platform you
-  can just run cmake and it should handle each platform (except Android which
-  again is special).
-- Actual guid bytes are stored in `std::array<unsigned char, 16>` instead of
-  `std::vector<unsigned char>`.
-- More error checking (like if you try to create a guid with invalid number of
-  bytes).
-
-If you're happily using version 0.1 then there's not really any reason to
-change.
-
 ## Compiling
 
 Just do the normal cmake thing:
@@ -91,7 +64,7 @@ Create a new random guid:
 
 ```cpp
 #include <crossguid/guid.hpp>
-...
+
 auto g = xg::newGuid();
 ```
 
@@ -109,6 +82,11 @@ Create from a string:
 
 ```cpp
 xg::Guid g("c405c66c-ccbb-4ffd-9b62-c286c0fd7a3b");
+```
+
+All `xg::Guid` constructors are constexpr so you can initialize GUIDs at compile time.
+```cpp
+static constexpr auto someGuid = xg::Guid("46744ec1-5d05-45ae-a356-776fbd04d103");
 ```
 
 ### Checking validity
@@ -137,26 +115,13 @@ utilize strings because the `<<` operator is overloaded. To print a guid to
 `std::cout`:
 
 ```cpp
-void doGuidStuff()
-{
-    auto myGuid = xg::newGuid();
-    std::cout << "Here is a guid: " << myGuid << std::endl;
+void doGuidStuff() {
+  auto myGuid = xg::newGuid();
+  std::cout << "Here is a guid: " << myGuid << std::endl;
 }
 ```
 
-Or to store a guid in a `std::string`:
-
-```cpp
-void doGuidStuff()
-{
-    auto myGuid = xg::newGuid();
-    std::stringstream stream;
-    stream << myGuid;
-    auto guidString = stream.str();
-}
-```
-
-There is also a `str()` function that returns a `std::string`:
+Or to convert a guid to a `std::string`:
 
 ```cpp
 std::string guidStr = xg::newGuid().str();
@@ -166,39 +131,29 @@ std::string guidStr = xg::newGuid().str();
 
 It's unlikely that you will need this, but this is done within the library
 internally to construct a `Guid` object from the raw data given by the system's
-built-in guid generation function. There are two key constructors for this:
+built-in guid generation function.
 
 ```cpp
 Guid(std::array<unsigned char, 16> &bytes);
 ```
-
-and
-
-```cpp
-Guid(const unsigned char * bytes);
-```
-
-When possible prefer the `std::array` constructor because it is safer. If you
-pass in an incorrectly sized C array then bad things will happen.
 
 ### Comparing guids
 
 `==` and `!=` are implemented, so the following works as expected:
 
 ```cpp
-void doGuidStuff()
-{
-    auto guid1 = xg::newGuid();
-    auto guid2 = xg::newGuid();
+void doGuidStuff() {
+  auto guid1 = xg::newGuid();
+  auto guid2 = xg::newGuid();
 
-    auto guidsAreEqual = guid1 == guid2;
-    auto guidsAreNotEqual = guid1 != guid2;
+  auto guidsAreEqual = guid1 == guid2;
+  auto guidsAreNotEqual = guid1 != guid2;
 }
 ```
 
 ### Hashing guids
 
-Guids can be used directly in containers requireing `std::hash` such as `std::map,`std::unordered_map` etc.
+Guids can be used directly in containers requireing `std::hash` such as `std::map`, `std::unordered_map` etc.
 
 ## License
 
